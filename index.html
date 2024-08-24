@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Script Editor</title>
+    <link rel="icon" href="/static/images/icon.png" type="image/png">
+    
+    <style>
+        @font-face {
+            font-family: 'Inter';
+            src: url('/static/fonts/Inter/Inter-Regular.ttf') format('truetype');
+            font-weight: 400;
+            font-style: normal;
+        }
+
+        @font-face {
+            font-family: 'Inter';
+            src: url('/static/fonts/Inter/Inter-Medium.ttf') format('truetype');
+            font-weight: 500;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'Inter';
+            src: url('/static/fonts/Inter/Inter-Bold.ttf') format('truetype');
+            font-weight: 600;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'Inter';
+            src: url('/static/fonts/Inter/Inter-Black.ttf') format('truetype');
+            font-weight: 700;
+            font-style: normal;
+        }
+
+        body, html {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            /* align-items: center; */
+            background: linear-gradient(#4E31AA, #3A1078);
+        }
+
+        .title-wrapper {
+            top: 20px;
+            width: 100%;
+            max-width: 1000px;
+            margin-bottom: 20px;
+            position: absolute;
+        }
+
+        .title {
+            font-family: 'Inter';
+            font-size: 20px;
+            font-weight: 400;
+            color: #F7F7F8;
+            text-align: center;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .main-container {
+            margin-top: 20px;
+            display: flex;
+            width: 100%;
+            max-width: 1000px; /* Adjust this value as needed */
+            height: calc(100% - 50px); /* 100px accounts for top and bottom padding */
+            padding: 50px 0;
+            box-sizing: border-box;
+        }
+        .textarea-container {
+            width: 600px;
+            /* height: calc(100% - 40px); Subtract 40px for top and bottom padding */
+            box-sizing: border-box;
+        }
+        textarea {
+            padding-top: 20px;
+            font-size: 15px;
+            font-family: 'Inter';
+            font-weight: 550;
+            width: 100%;
+            height: 100%;
+            box-sizing: border-box;
+            resize: none;
+            padding: 20px;
+            border-radius: 20px;
+            border: 2px solid transparent;
+            background-color: #F7F7F8;
+            box-shadow: 0px 0px 20px #3795BD;
+            outline: none;
+
+            line-height: 1.5;
+            /* background-clip: padding-box; */
+
+            /* scrollbar-width: none;
+            -ms-overflow-style: none;  */
+        }
+
+        /* textarea::-webkit-scrollbar {
+            display: none;
+        } */
+
+        textarea::placeholder {
+            font-style: italic;
+            font-weight: 400;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        textarea::-webkit-scrollbar-track {
+            /* background: #E0E0E0; */
+            background: transparent;
+            margin: 15px 0;
+        }
+
+        textarea::-webkit-scrollbar-thumb {
+            background: #4E31AA;
+            border: none;
+            cursor: pointer;
+
+        }
+
+
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+            margin-left: 10px;
+        }
+
+        .download-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: auto;
+        }
+
+        #fileNameInput {
+            font-family: 'Inter';
+            font-size: 14px;
+            padding: 5px;
+            margin-left: 10px;
+            border: none;
+            border-radius: 5px;
+            width: 60px;
+            position: absolute;
+            margin-left: 50px;
+            outline: none;
+        }
+        .center-buttons {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .button {
+            font-family: 'Inter';
+            font-size: 14px;
+            font-weight: 500;
+            padding: 10px;
+            background-color: #F7F7F8;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 40px;  /* Adjust as needed */
+            height: 40px; /* Adjust as needed */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .button:hover {
+            background-color: #cbdbff;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .button-icon {
+            width: 20px;  /* Adjust as needed */
+            height: 20px; /* Adjust as needed */
+        }
+
+        #downloadButton {
+            align-self: flex-start;
+        }
+
+        #projectButton {
+            margin-top: 10px;
+        }
+
+        #swapButton {
+            margin-top: 10px;
+        }
+
+        .voice-container {
+            display: flex;
+            align-items: center;
+            position: relative;
+            margin-top: 10px;
+        }
+
+        #voice1Button, #voice2Button {
+            margin: 0;
+        }
+
+
+        #clearButton {
+            margin-top: auto;
+        }
+
+        #clearButton:hover {
+            background-color: #ff3333;
+        }
+
+
+        #voice1Input, #voice2Input {
+            font-family: 'Inter';
+            font-size: 14px;
+            padding: 5px;
+            border: none;
+            border-radius: 5px;
+            width: 60px;
+            position: absolute;
+            margin-left: 50px;
+            outline: none;
+        }
+
+        #findReplaceDialog {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #F7F7F8;
+            padding: 10px;
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            z-index: 1000;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            align-items: center;
+        }
+
+        #findReplaceDialog input {
+            font-family: 'Inter', sans-serif;
+            font-size: 12px;
+            padding: 6px;
+            margin-right: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            outline: none;
+            width: 120px;
+        }
+
+        #findReplaceDialog button {
+            font-family: 'Inter', sans-serif;
+            font-size: 12px;
+            font-weight: 500;
+            padding: 6px 12px;
+            background-color: #4E31AA;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-left: 4px;
+        }
+
+        #findReplaceDialog button:hover {
+            background-color: #3A1078;
+        }
+
+        #findReplaceDialog button:active {
+            transform: translateY(1px);
+        }
+
+        #closeButton {
+            background-color: #ff3333 !important;
+        }
+
+        #closeButton:hover {
+            background-color: #cc0000 !important;
+        }
+    </style>
+</head>
+<body>
+    <div id="findReplaceDialog" style="display: none">
+        <input type="text" id="findInput" placeholder="Find">
+        <input type="text" id="replaceInput" placeholder="Replace">
+        <button onclick="performReplaceAll()">Replace All</button>
+        <button id="closeButton" onclick="closeFindReplaceDialog()">Close</button>
+    </div>
+
+    <div class="title-wrapper">
+        <h1 class="title">Script Editor</h1>
+    </div>
+    <div class="main-container">
+        <div class="textarea-container">
+            <textarea id="scriptTextarea" spellcheck="false" placeholder="Paste your script here..."></textarea>
+        </div>
+        <div class="button-container">
+            <div class="download-container">
+                <button class="button" id="downloadButton" onclick="downloadScript()">
+                    <img src="/static/images/icons/download.png" alt="Download" class="button-icon">
+                </button>
+                <input type="text" id="fileNameInput" placeholder="File name">
+            </div>
+            <div class="center-buttons">
+                <button class="button" id="emojisButton" onclick="sortEmojis()">
+                    <img src="/static/images/icons/emoji.png" alt="Emoji" class="button-icon">
+                </button>
+                <button class="button" id="projectButton" onclick="projectSentences()">
+                    <img src="/static/images/icons/split.png" alt="Project" class="button-icon">
+                </button>
+                <button class="button" id="swapButton" onclick="swapRecipients()">
+                    <img src="/static/images/icons/swap.png" alt="Swap" class="button-icon">
+                </button>
+                <div class="voice-container">
+                    <button class="button" id="voice1Button" onclick="setVoice(1)">
+                        <img src="/static/images/icons/voice1.png" alt="Voice 1" class="button-icon">
+                    </button>
+                    <input type="text" id="voice1Input" placeholder="Voice 1">
+                </div>
+                <div class="voice-container">
+                    <button class="button" id="voice2Button" onclick="setVoice(2)">
+                        <img src="/static/images/icons/voice2.png" alt="Voice 2" class="button-icon">
+                    </button>
+                    <input type="text" id="voice2Input" placeholder="Voice 2">
+                </div>
+            </div>
+            <button class="button" id="clearButton" onclick="clearTextarea()">
+                <img src="/static/images/icons/clear.png" alt="Clear" class="button-icon">
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const textarea = document.getElementById('scriptTextarea');
+    
+        // Load saved content when the page loads
+        window.addEventListener('load', () => {
+            const savedContent = localStorage.getItem('scriptContent');
+            if (savedContent) {
+                textarea.value = savedContent;
+            }
+        });
+    
+        // Save content whenever it changes
+        textarea.addEventListener('input', () => {
+            localStorage.setItem('scriptContent', textarea.value);
+        });
+
+        function adjustTextareaBorderRadius() {
+            const textarea = document.getElementById('scriptTextarea');
+            if (textarea.scrollHeight > textarea.clientHeight) {
+                textarea.style.borderTopRightRadius = '0';
+                textarea.style.borderBottomRightRadius = '0';
+            } else {
+                textarea.style.borderTopRightRadius = '20px';
+                textarea.style.borderBottomRightRadius = '20px';
+            }
+        }
+
+        function delay(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        async function sortEmojis() {
+            const textarea = document.getElementById('scriptTextarea');
+            const lines = textarea.value.split(/\r?\n/);
+
+            const emojiRegex = /\p{Emoji_Presentation}|\p{Emoji}\uFE0F/gu;
+
+            // Updated regex to include face emojis, finger emojis, skull emoji, and heart emojis
+            const whitelistedEmojis = /[\u{1F600}-\u{1F64F}\u{1F900}-\u{1F9FF}\u{1F480}\u{2764}\u{1F49A}-\u{1F49F}\u{1F90D}-\u{1F90F}\u{1F9E1}]/u;
+
+            for (let i = 0; i < lines.length; i++) {
+                // Replace all emojis that are not in the whitelist with an empty string
+                console.log(lines[i])
+                lines[i] = lines[i].replace(emojiRegex, (match) => {
+                    return whitelistedEmojis.test(match) ? match : '';
+                });
+                console.log(lines[i])
+
+
+                // Update the textarea
+                textarea.value = lines.join('\n');
+                await delay(10);
+            }
+        }
+
+
+        async function projectSentences() {
+            const endSentenceChars = ['.', '?', '!'];
+
+            const textarea = document.getElementById('scriptTextarea');
+            let lines = textarea.value.split(/\r?\n/);
+
+            for (let i = 0; i < lines.length; i++) {
+                let line = lines[i];
+                let sentences = [];
+                let currentSentence = '';
+
+                // Split the line into sentences
+                for (let j = 0; j < line.length; j++) {
+                    currentSentence += line[j];
+                    if (endSentenceChars.includes(line[j]) && j < line.length - 1 && line[j + 1] === ' ') {
+                        sentences.push(currentSentence.trim());
+                        currentSentence = '';
+                    }
+                }
+                if (currentSentence.trim()) {
+                    sentences.push(currentSentence.trim());
+                }
+
+                // If there's more than one sentence, split them into separate lines
+                if (sentences.length > 1) {
+                    lines.splice(i, 1, ...sentences.map((sentence, index) => {
+                        if (index === 0) return sentence;
+
+                        let prefix = '';
+                        if (line.includes('>')) {
+                            prefix = line.split('>')[0] + '>';
+                        } else if (line.includes(':')) {
+                            prefix = line.split(':')[0] + ':';
+                        }
+
+                        return prefix + ' ' + sentence;
+                    }));
+
+                    i += sentences.length - 1; // Adjust the loop counter
+                }
+
+                lines = lines.map(line => {
+                    if (line.endsWith('.') && !line.endsWith('..')) {
+                        return line.slice(0, -1);
+                    }
+                    return line;
+                });
+                textarea.value = lines.join('\n');
+                await delay(10);
+            }
+        }
+
+        async function swapRecipients() {
+            const textarea = document.getElementById('scriptTextarea');
+            const lines = textarea.value.split(/\r?\n/);
+
+            for (let i = 0; i < lines.length; i++) {
+                if (lines[i].includes('1:')) {
+                    lines[i] = lines[i].replace('1:', '2:');
+                } else if (lines[i].includes('2:')) {
+                    lines[i] = lines[i].replace('2:', '1:');
+                }
+                textarea.value = lines.join('\n');
+                await delay(10)
+            }
+        }
+
+        async function setVoice(recipient) {
+            let voice = document.getElementById(`voice${recipient}Input`).value;
+            if (voice !== "") {
+                voice = voice[0].toUpperCase() + voice.slice(1);
+            }
+
+            const textarea = document.getElementById('scriptTextarea');
+            const lines = textarea.value.split(/\r?\n/);
+
+            for (let i = 0; i < lines.length; i++) {
+                if (!lines[i].includes(String(recipient) + ':')) {
+                    continue;
+                }
+                if (lines[i].includes('>')) {
+                    if (voice === "") {
+                        lines[i] = lines[i][0] + ': ' + lines[i].split('>')[1].trim();
+                    } else {
+                        lines[i] = lines[i][0] + ': ' + voice + '> ' + lines[i].split('>')[1].trim();
+                    }
+                } else {
+                    if (voice !== "") {
+                        lines[i] = lines[i][0] + ': ' + voice + '> ' + lines[i].split(':')[1].trim();
+                    }
+                }
+                textarea.value = lines.join('\n');
+                await delay(10);
+            }
+            
+        }
+
+
+        function downloadScript() {
+            const textarea = document.getElementById('scriptTextarea');
+            const fileNameInput = document.getElementById('fileNameInput');
+            const text = textarea.value;
+            const blob = new Blob([text], { type: 'text/plain' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            
+            // Use the input value if it's not empty, otherwise use 'script'
+            const fileName = fileNameInput.value.trim() || 'script';
+            a.download = `${fileName}.txt`;
+            
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+
+        function clearTextarea() {
+            const textarea = document.getElementById('scriptTextarea');
+            textarea.value = "";
+        }
+
+        // adjustTextareaBorderRadius();
+
+        // textarea.addEventListener('input', adjustTextareaBorderRadius);
+
+        // window.addEventListener('resize', adjustTextareaBorderRadius);
+
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.key === 'h') {
+                console.log('opened')
+                e.preventDefault();
+                openFindReplaceDialog();
+            }
+        });
+
+        function openFindReplaceDialog() {
+            document.getElementById('findReplaceDialog').style.display = 'block';
+            document.getElementById('findInput').focus();
+        }
+
+        function closeFindReplaceDialog() {
+            document.getElementById('findReplaceDialog').style.display = 'none';
+        }
+
+        function performReplaceAll() {
+            const textarea = document.getElementById('scriptTextarea');
+            const findText = document.getElementById('findInput').value;
+            const replaceText = document.getElementById('replaceInput').value;
+            
+            if (findText) {
+                const regex = new RegExp(findText, 'g');
+                textarea.value = textarea.value.replace(regex, replaceText);
+                textarea.focus();
+            }
+        }
+    </script>
+</body>
+</html>
